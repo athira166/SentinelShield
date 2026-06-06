@@ -129,28 +129,112 @@ def dashboard():
         </tr>
         """
     return f"""
-    <h1>🛡️ SentinelShield Dashboard</h1>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <h2>Summary</h2>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 20px;
+        }}
 
-    <p>Total Requests: {total}</p>
-    <p>Blocked Requests: {blocked}</p>
-    <p>Allowed Requests: {allowed}</p>
+        h1 {{
+            text-align: center;
+            color: #38bdf8;
+        }}
 
-    <hr>
+        .container {{
+            max-width: 1100px;
+            margin: auto;
+        }}
 
-    <h2>Attack Breakdown</h2>
+        .cards {{
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }}
 
+        .card {{
+            flex: 1;
+            background: #111827;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }}
+
+        .section {{
+            margin-top: 20px;
+            background: #111827;
+            padding: 15px;
+            border-radius: 10px;
+        }}
+
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+        }}
+
+        th, td {{
+            padding: 10px;
+            border-bottom: 1px solid #1f2937;
+            text-align: center;
+        }}
+
+        th {{
+            color: #38bdf8;
+        }}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🛡️ SentinelShield Dashboard</h1>
+
+<!-- SUMMARY -->
+<div class="cards">
+    <div class="card">
+        <p>Total Requests</p>
+        <h2>{total}</h2>
+    </div>
+
+    <div class="card">
+        <p>Blocked</p>
+        <h2>{blocked}</h2>
+    </div>
+
+    <div class="card">
+        <p>Allowed</p>
+        <h2>{allowed}</h2>
+    </div>
+</div>
+
+<!-- CHART -->
+<div class="section">
+    <h3>Attack Trends</h3>
+    <canvas id="attackChart"></canvas>
+</div>
+
+<!-- BREAKDOWN -->
+<div class="section">
+    <h3>Attack Breakdown</h3>
     <p>XSS: {xss}</p>
     <p>SQL Injection: {sqli}</p>
     <p>Command Injection: {cmd}</p>
     <p>LFI: {lfi}</p>
     <p>Directory Traversal: {traversal}</p>
-    <hr>
+</div>
 
-    <h2>Recent Logs</h2>
+<!-- LOGS -->
+<div class="section">
+    <h3>Recent Logs</h3>
 
-    <table border="1">
+    <table>
         <tr>
             <th>Timestamp</th>
             <th>IP</th>
@@ -159,8 +243,64 @@ def dashboard():
         </tr>
 
         {recent_logs}
-
     </table>
-    """
+</div>
+
+</div>
+
+<script>
+const ctx = document.getElementById('attackChart');
+
+new Chart(ctx, {{
+    type: 'bar',
+    data: {{
+        labels: ["XSS", "SQLi", "CMD", "LFI", "Traversal"],
+        datasets: [{{
+            label: "Attack Count",
+            data: [
+                {xss},
+                {sqli},
+                {cmd},
+                {lfi},
+                {traversal}
+            ],
+            backgroundColor: [
+                '#ef4444',
+                '#f97316',
+                '#eab308',
+                '#22c55e',
+                '#3b82f6'
+            ]
+        }}]
+    }},
+    options: {{
+        responsive: true,
+        plugins: {{
+            legend: {{
+                labels: {{
+                    color: "#e5e7eb"
+                }}
+            }}
+        }},
+        scales: {{
+            x: {{
+                ticks: {{
+                    color: "#e5e7eb"
+                }}
+            }},
+            y: {{
+                beginAtZero: true,
+                ticks: {{
+                    color: "#e5e7eb"
+                }}
+            }}
+        }}
+    }}
+}});
+</script>
+
+</body>
+</html>
+"""
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
