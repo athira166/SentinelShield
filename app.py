@@ -3,7 +3,7 @@ from datetime import datetime
 import urllib.parse   
 
 app = Flask(__name__)
-
+blocked_ips = {}
 @app.route("/")
 def home():
     req = request.args.get("q", "")
@@ -12,7 +12,11 @@ def home():
     req = urllib.parse.unquote_plus(req).lower()
 
     ip = request.remote_addr
-
+    if ip in blocked_ips and blocked_ips[ip] >= 3:
+       return """
+       <h1>🚫 Access Denied</h1>
+       <p>Your IP has been blocked due to repeated malicious requests.</p>
+       """, 403
    
     category = "Normal Request"
     status = "ALLOWED"
@@ -48,8 +52,9 @@ def home():
 
     with open("security.log", "a") as log:
         log.write(log_entry)
-
-    return f"""
+    if status == "BLOCKED":
+       blocked_ips[ip] = blocked_ips.get(ip, 0) + 1
+       return f"""
     <h1>SentinelShield</h1>
     <p><b>IP:</b> {ip}</p>
     <p><b>Request:</b> {req}</p>
@@ -229,7 +234,6 @@ def dashboard():
     <p>LFI: {lfi}</p>
     <p>Directory Traversal: {traversal}</p>
 </div>
-
 <!-- LOGS -->
 <div class="section">
     <h3>Recent Logs</h3>
