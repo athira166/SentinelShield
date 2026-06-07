@@ -54,7 +54,7 @@ def home():
         log.write(log_entry)
     if status == "BLOCKED":
        blocked_ips[ip] = blocked_ips.get(ip, 0) + 1
-       return f"""
+    return f"""
     <h1>SentinelShield</h1>
     <p><b>IP:</b> {ip}</p>
     <p><b>Request:</b> {req}</p>
