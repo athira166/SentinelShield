@@ -132,7 +132,7 @@ def dashboard():
 <html>
 <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <meta http-equiv="refresh" content="5">
     <style>
         body {{
             font-family: Arial, sans-serif;
@@ -298,7 +298,6 @@ new Chart(ctx, {{
     }}
 }});
 </script>
-
 </body>
 </html>
 """
